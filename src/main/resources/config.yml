@@ -1,0 +1,13 @@
+language: en-US
+database:
+  url: 'jdbc:h2:./FactionWarps/faction_warps_db;AUTO_SERVER=true;MODE=MYSQL;DATABASE_TO_UPPER=false'
+  dialect: 'H2'
+  username: 'sa'
+  password: ''
+factionWarps:
+  maxWarps: 3
+  delay: 3
+  cooldown: 3
+  # List at https://jd.papermc.io/paper/1.19/org/bukkit/Sound.html under Enum Constants, case sensitive.
+  teleportSound: 'ENTITY_ENDERMAN_TELEPORT'
+  countdownSound: 'ENTITY_EXPERIENCE_ORB_PICKUP'

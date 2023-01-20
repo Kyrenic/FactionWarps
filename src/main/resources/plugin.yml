@@ -1,0 +1,4 @@
+name: FactionWarps
+version: '${project.version}'
+main: me.kyrenic.factionwarps.FactionWarps
+api-version: 1.19
