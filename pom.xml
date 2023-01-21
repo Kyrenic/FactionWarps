@@ -84,6 +84,40 @@
                     <target>${java.version}</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.jooq</groupId>
+                <artifactId>jooq-codegen-maven</artifactId>
+                <version>3.17.7</version>
+                <executions>
+                    <execution>
+                        <id>jooq-codegen</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <generator>
+                        <name>org.jooq.codegen.KotlinGenerator</name>
+                        <database>
+                            <name>org.jooq.meta.extensions.ddl.DDLDatabase</name>
+                            <includes>.*</includes>
+                            <excludes/>
+                            <properties>
+                                <property><key>scripts</key><value>src/main/resources/db</value></property>
+                                <property><key>sort</key><value>semantic</value></property>
+                                <property><key>defaultNameCase</key><value>lower</value></property>
+                            </properties>
+                            <inputSchema>PUBLIC</inputSchema>
+                        </database>
+                        <generate/>
+                        <target>
+                            <packageName>me.kyrenic.factionwarps.jooq</packageName>
+                        </target>
+                    </generator>
+                </configuration>
+            </plugin>
         </plugins>
         <resources>
             <resource>
@@ -150,6 +184,11 @@
             <groupId>org.jooq</groupId>
             <artifactId>jooq-kotlin</artifactId>
             <version>3.17.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq-meta-extensions</artifactId>
+            <version>3.17.4</version>
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>

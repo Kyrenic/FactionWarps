@@ -66,7 +66,7 @@ class FactionWarps : JavaPlugin() {
 
         val flyway = Flyway.configure()
             .dataSource(dataSource)
-            .locations("classpath:me/kyrenic/factionwarps/src/main/resources/db/migration")
+            .locations("classpath:me/kyrenic/factionwarps/db")
             .table("fw_schema_history")
             .baselineOnMigrate(true)
             .baselineVersion("0")
