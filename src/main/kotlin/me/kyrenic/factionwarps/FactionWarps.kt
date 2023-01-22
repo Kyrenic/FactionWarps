@@ -88,7 +88,7 @@ class FactionWarps : JavaPlugin() {
         )
 
         // Create services.
-        val jooqWarpService = JooqWarpService(dsl)
+        val jooqWarpService = JooqWarpService(dsl, this)
 
         val warpService = WarpService(this, jooqWarpService)
         val configService = ConfigService(this)

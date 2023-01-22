@@ -6,11 +6,11 @@ import java.util.UUID
 
 data class Warp(
     val id: UUID,
-    val factionId: MfFactionId,
+    val factionId: UUID,
     val name: String,
     val location: Location,
-    val open: Boolean = false,
+    val accessible: Boolean = false,
     val tax: Double = 0.0,
-    val bannedFactionIds: List<MfFactionId> = emptyList(),
+    val bannedFactionIds: List<UUID> = emptyList(),
     val bannedPlayerIds: List<UUID> = emptyList()
 )
