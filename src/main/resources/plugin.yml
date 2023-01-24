@@ -1,4 +1,34 @@
 name: FactionWarps
+description: Extends Medieval Factions with the ability to create warps for their faction.
 version: '${project.version}'
 main: me.kyrenic.factionwarps.FactionWarps
 api-version: 1.19
+depend: [MedievalFactions]
+permissions:
+  fw.warp.warp:
+    description: Allows warping.
+    default: true
+  fw.warp.list:
+    description: Allows listing warps.
+    default: true
+  fw.warp.create:
+    description: Allows creating warps.
+    default: true
+  fw.warp.create.others:
+    description: Allows creating warps for other factions.
+    default: op
+  fw.warp.delete:
+    description: Allows deleting warps.
+    default: true
+  fw.warp.delete.others:
+    description: Allows deleting warps of other factions.
+    default: op
+  fw.config.set:
+    description: Set a config option to a desired value on next restart.
+    default: op
+  fw.config.reset:
+    description: Reset a config option to what it was set to on last startup.
+    default: op
+  fw.config.default:
+    description: Set a config option to its default setting.
+    default: op
