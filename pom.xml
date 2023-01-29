@@ -31,6 +31,12 @@
                         </goals>
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <relocations>
+                                <relocation>
+                                    <pattern>org.h2</pattern>
+                                    <shadedPattern>com.dansplugins.factionsystem.shadow.org.h2</shadedPattern>
+                                </relocation>
+                            </relocations>
                         </configuration>
                     </execution>
                 </executions>
@@ -137,10 +143,6 @@
             <id>dans-repo</id>
             <url>https://repo.dansplugins.com/repository/maven-public/</url>
         </repository>
-        <repository>
-            <id>dans-repo</id>
-            <url>https://repo1.maven.org/maven2/com/h2database/h2/</url>
-        </repository>
     </repositories>
 
     <dependencies>
@@ -158,7 +160,7 @@
         <dependency>
             <groupId>com.dansplugins</groupId>
             <artifactId>medieval-factions</artifactId>
-            <version>5.0.6</version>
+            <version>5.1.0</version>
         </dependency>
         <dependency>
             <groupId>dev.forkhandles</groupId>
