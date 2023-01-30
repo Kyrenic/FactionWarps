@@ -18,11 +18,12 @@
     </properties>
 
     <build>
+        <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
+                <version>3.4.1</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -31,10 +32,91 @@
                         </goals>
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <artifactSet>
+                                <excludes>
+                                    <exclude>org.jetbrains.kotlin:kotlin-stdlib-jdk8</exclude>
+                                    <exclude>org.jetbrains.kotlin:kotlin-stdlib</exclude>
+                                    <exclude>org.jetbrains.kotlin:kotlin-stdlib-jdk7</exclude>
+                                    <exclude>org.jetbrains.kotlin:kotlin-stdlib-common</exclude>
+                                    <exclude>org.jetbrains.kotlin:kotlin-reflect</exclude>
+                                    <exclude>com.sun.activation:jakarta.activation</exclude>
+                                    <exclude>io.r2dbc:r2dbc-spi</exclude>
+                                    <exclude>jakarta.xml.bind:jakarta.xml.bind-api</exclude>
+                                    <exclude>com.h2database:h2</exclude>
+                                    <exclude>org.jetbrains:annotations</exclude>
+                                    <exclude>org.reactivestreams:reactive-streams</exclude>
+                                    <exclude>org.jooq:jooq-meta-extensions</exclude>
+                                    <exclude>org.jooq:jooq-meta</exclude>
+                                </excludes>
+                            </artifactSet>
                             <relocations>
+                                <relocation>
+                                    <pattern>com.google</pattern>
+                                    <shadedPattern>com.dansplugins.factionsystem.shadow.com.google</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.mariadb</pattern>
+                                    <shadedPattern>com.dansplugins.factionsystem.shadow.org.mariadb</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.sun</pattern>
+                                    <shadedPattern>com.dansplugins.factionsystem.shadow.com.sun</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.zaxxer</pattern>
+                                    <shadedPattern>com.dansplugins.factionsystem.shadow.com.zaxxer</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>dev.forkhandles</pattern>
+                                    <shadedPattern>com.dansplugins.factionsystem.shadow.dev.forkhandles</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>google</pattern>
+                                    <shadedPattern>com.dansplugins.factionsystem.shadow.google</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>io.r2dbc</pattern>
+                                    <shadedPattern>com.dansplugins.factionsystem.shadow.io.r2dbc</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>jakarta</pattern>
+                                    <shadedPattern>com.dansplugins.factionsystem.shadow.jakarta</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>kotlin</pattern>
+                                    <shadedPattern>com.dansplugins.factionsystem.shadow.kotlin</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.bstats</pattern>
+                                    <shadedPattern>com.dansplugins.factionsystem.shadow.org.bstats</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.flywaydb</pattern>
+                                    <shadedPattern>com.dansplugins.factionsystem.shadow.org.flywaydb</shadedPattern>
+                                </relocation>
                                 <relocation>
                                     <pattern>org.h2</pattern>
                                     <shadedPattern>com.dansplugins.factionsystem.shadow.org.h2</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.intellij</pattern>
+                                    <shadedPattern>com.dansplugins.factionsystem.shadow.org.intellij</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.jetbrains</pattern>
+                                    <shadedPattern>com.dansplugins.factionsystem.shadow.org.jetbrains</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.jooq</pattern>
+                                    <shadedPattern>me.kyrenic.factionwarps.shadow.org.jooq</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.reactivestreams</pattern>
+                                    <shadedPattern>com.dansplugins.factionsystem.shadow.org.reactivestreams</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>preponderous.ponder</pattern>
+                                    <shadedPattern>com.dansplugins.factionsystem.shadow.preponderous.ponder</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
@@ -79,26 +161,28 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <jdbc>
-                        <driver>org.h2.Driver</driver>
-                        <url>jdbc:h2:~/test</url>
-                        <user>sa</user>
-                        <password/>
-                    </jdbc>
                     <generator>
                         <name>org.jooq.codegen.KotlinGenerator</name>
                         <database>
                             <name>org.jooq.meta.extensions.ddl.DDLDatabase</name>
                             <includes>.*</includes>
-                            <excludes/>
+                            <excludes />
                             <properties>
-                                <property><key>scripts</key><value>src/main/resources/db</value></property>
-                                <property><key>sort</key><value>semantic</value></property>
-                                <property><key>defaultNameCase</key><value>lower</value></property>
+                                <property>
+                                    <key>scripts</key>
+                                    <value>src/main/resources/me/kyrenic/factionwarps/db</value>
+                                </property>
+                                <property>
+                                    <key>sort</key>
+                                    <value>semantic</value>
+                                </property>
+                                <property>
+                                    <key>defaultNameCase</key>
+                                    <value>lower</value>
+                                </property>
                             </properties>
                             <inputSchema>PUBLIC</inputSchema>
                         </database>
-                        <generate/>
                         <target>
                             <packageName>me.kyrenic.factionwarps.jooq</packageName>
                         </target>
@@ -156,46 +240,55 @@
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib-jdk8</artifactId>
             <version>${kotlin.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.dansplugins</groupId>
             <artifactId>medieval-factions</artifactId>
             <version>5.1.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>dev.forkhandles</groupId>
             <artifactId>result4k</artifactId>
             <version>2.3.0.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.jooq</groupId>
             <artifactId>jooq-kotlin</artifactId>
-            <version>3.17.6</version>
+            <version>3.17.7</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.jooq</groupId>
             <artifactId>jooq-meta-extensions</artifactId>
-            <version>3.17.4</version>
+            <version>3.17.7</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <version>2.1.214</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
             <version>9.11.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-mysql</artifactId>
             <version>9.11.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>5.0.1</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

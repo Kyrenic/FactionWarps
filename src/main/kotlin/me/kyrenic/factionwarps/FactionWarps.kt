@@ -11,11 +11,16 @@ import me.kyrenic.factionwarps.permission.FactionWarpsFactionPermissions
 import me.kyrenic.factionwarps.services.ConfigService
 import me.kyrenic.factionwarps.services.Services
 import me.kyrenic.factionwarps.services.WarpService
+import org.bukkit.command.CommandMap
+import org.bukkit.command.PluginCommand
+import org.bukkit.plugin.Plugin
+import org.bukkit.plugin.SimplePluginManager
 import org.bukkit.plugin.java.JavaPlugin
 import org.flywaydb.core.Flyway
 import org.jooq.SQLDialect
 import org.jooq.conf.Settings
 import org.jooq.impl.DSL
+import java.lang.reflect.Constructor
 import javax.sql.DataSource
 
 class FactionWarps : JavaPlugin() {
@@ -30,6 +35,8 @@ class FactionWarps : JavaPlugin() {
     lateinit var language: Language
 
     override fun onEnable() {
+        saveDefaultConfig()
+
         // Get Medieval Factions, disable if not found.
         val medievalFactions = server.pluginManager.getPlugin("MedievalFactions") as? MedievalFactions
         if (medievalFactions == null) {
@@ -59,10 +66,7 @@ class FactionWarps : JavaPlugin() {
         }
         dataSource = HikariDataSource(hikariConfig)
 
-        val oldClassLoader = Thread.currentThread().contextClassLoader
-        Thread.currentThread().contextClassLoader = classLoader
-
-        val flyway = Flyway.configure()
+        val flyway = Flyway.configure(classLoader)
             .dataSource(dataSource)
             .locations("classpath:me/kyrenic/factionwarps/db")
             .table("fw_schema_history")
@@ -71,8 +75,6 @@ class FactionWarps : JavaPlugin() {
             .validateOnMigrate(false)
             .load()
         flyway.migrate()
-
-        Thread.currentThread().contextClassLoader = oldClassLoader
 
         System.setProperty("org.jooq.no-logo", "true")
         System.setProperty("org.jooq.no-tips", "true")
@@ -97,6 +99,7 @@ class FactionWarps : JavaPlugin() {
         )
 
         // Add permissions.
+        factionPermissions = FactionWarpsFactionPermissions(this)
         val factionService = medievalFactions.services.factionService
         var factionsChanged = 0
         // Loop through all the factions.
@@ -131,7 +134,22 @@ class FactionWarps : JavaPlugin() {
         // To add: unclaim, overclaim, faction disband
 
         // Set command executors.
-        getCommand(language["CommandWarp"])?.setExecutor(FactionWarpCommands(this))
+        getDynamicCommand(language["CommandWarp"])?.setExecutor(FactionWarpCommands(this))
+    }
+
+    private fun getCommandMap(): CommandMap {
+        val commandMapField = SimplePluginManager::class.java.getDeclaredField("commandMap")
+        commandMapField.isAccessible = true
+        return commandMapField.get(server.pluginManager) as CommandMap
+    }
+
+    private fun getDynamicCommand(name: String, vararg aliases: String): PluginCommand {
+        val constructor: Constructor<PluginCommand> = PluginCommand::class.java.getDeclaredConstructor(String::class.java, Plugin::class.java)
+        constructor.isAccessible = true
+        val command = constructor.newInstance(name, this)
+        command.aliases = aliases.toList()
+        getCommandMap().register(description.name, command)
+        return command
     }
 
     override fun onDisable() {

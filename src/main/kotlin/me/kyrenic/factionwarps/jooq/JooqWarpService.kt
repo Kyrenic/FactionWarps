@@ -4,7 +4,6 @@ import me.kyrenic.factionwarps.jooq.tables.records.WarpsRecord
 import me.kyrenic.factionwarps.jooq.tables.references.WARPS
 import me.kyrenic.factionwarps.jooq.tables.references.WARP_BANNED_FACTIONS
 import me.kyrenic.factionwarps.jooq.tables.references.WARP_BANNED_PLAYERS
-import me.kyrenic.factionwarps.jooq.tables.references.WARP_LOCATIONS
 import me.kyrenic.factionwarps.warp.Warp
 import org.bukkit.Location
 import org.bukkit.plugin.Plugin
@@ -15,28 +14,24 @@ import java.util.UUID
 class JooqWarpService(private val dsl: DSLContext, private val plugin: Plugin) {
 
     private fun buildWarp(warpResult: WarpsRecord): Warp {
-        val warpLocationResult = dsl.selectFrom(WARP_LOCATIONS)
-            .where(WARPS.ID.eq(warpResult.id))
-            .fetchOne()
-
-        val bannedFactions = getBannedFactions(warpResult.id!!)
-        val bannedPlayers = getBannedPlayers(warpResult.id!!)
+        val bannedFactions = getBannedFactions(requireNotNull(warpResult.id))
+        val bannedPlayers = getBannedPlayers(requireNotNull(warpResult.id))
         val warpLocation = Location(
-            plugin.server.getWorld(UUID.fromString(warpLocationResult?.world)),
-            warpLocationResult?.x!!,
-            warpLocationResult.y!!,
-            warpLocationResult.z!!,
-            warpLocationResult.yaw!!,
-            warpLocationResult.pitch!!
+            plugin.server.getWorld(UUID.fromString(warpResult.world)),
+            requireNotNull(warpResult.x),
+            requireNotNull(warpResult.y),
+            requireNotNull(warpResult.z),
+            requireNotNull(warpResult.yaw),
+            requireNotNull(warpResult.pitch)
         )
 
         return Warp(
-            UUID.fromString(warpResult.id!!),
-            UUID.fromString(warpResult.factionId!!),
-            warpResult.name!!,
+            UUID.fromString(warpResult.id),
+            UUID.fromString(warpResult.factionId),
+            requireNotNull(warpResult.name),
             warpLocation,
-            warpResult.accessible!!,
-            warpResult.tax!!,
+            requireNotNull(warpResult.accessible),
+            requireNotNull(warpResult.tax),
             bannedFactions,
             bannedPlayers
         )
@@ -72,30 +67,26 @@ class JooqWarpService(private val dsl: DSLContext, private val plugin: Plugin) {
         dsl.insertInto(WARPS)
             .set(WARPS.ID, warp.id.toString())
             .set(WARPS.FACTION_ID, warp.factionId.toString())
+            .set(WARPS.NAME, warp.name)
             .set(WARPS.ACCESSIBLE, warp.accessible)
             .set(WARPS.TAX, warp.tax)
+            .set(WARPS.WORLD, requireNotNull(warp.location.world).uid.toString())
+            .set(WARPS.X, warp.location.x)
+            .set(WARPS.Y, warp.location.y)
+            .set(WARPS.Z, warp.location.z)
+            .set(WARPS.YAW, warp.location.yaw)
+            .set(WARPS.PITCH, warp.location.pitch)
             .onConflict(WARPS.ID).doUpdate()
+            .set(WARPS.NAME, warp.name)
             .set(WARPS.ACCESSIBLE, warp.accessible)
             .set(WARPS.TAX, warp.tax)
+            .set(WARPS.WORLD, requireNotNull(warp.location.world).uid.toString())
+            .set(WARPS.X, warp.location.x)
+            .set(WARPS.Y, warp.location.y)
+            .set(WARPS.Z, warp.location.z)
+            .set(WARPS.YAW, warp.location.yaw)
+            .set(WARPS.PITCH, warp.location.pitch)
             .where(WARPS.ID.eq(warp.id.toString()))
-            .execute()
-        val location = warp.location
-        dsl.insertInto(WARP_LOCATIONS)
-            .set(WARP_LOCATIONS.WARP_ID, warp.id.toString())
-            .set(WARP_LOCATIONS.WORLD, location.world.toString())
-            .set(WARP_LOCATIONS.X, location.x)
-            .set(WARP_LOCATIONS.Y, location.y)
-            .set(WARP_LOCATIONS.Z, location.z)
-            .set(WARP_LOCATIONS.YAW, location.yaw)
-            .set(WARP_LOCATIONS.PITCH, location.pitch)
-            .onConflict(WARP_LOCATIONS.WARP_ID).doUpdate()
-            .set(WARP_LOCATIONS.WORLD, location.world.toString())
-            .set(WARP_LOCATIONS.X, location.x)
-            .set(WARP_LOCATIONS.Y, location.y)
-            .set(WARP_LOCATIONS.Z, location.z)
-            .set(WARP_LOCATIONS.YAW, location.yaw)
-            .set(WARP_LOCATIONS.PITCH, location.pitch)
-            .where(WARP_LOCATIONS.WARP_ID.eq(warp.id.toString()))
             .execute()
     }
 

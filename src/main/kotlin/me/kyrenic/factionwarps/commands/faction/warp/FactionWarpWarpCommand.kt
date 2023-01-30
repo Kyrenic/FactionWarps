@@ -28,7 +28,7 @@ class FactionWarpWarpCommand(private val plugin: FactionWarps) : CommandExecutor
             return true
         }
         // Command needs no argument.
-        if (args.size in 2..2) {
+        if (args.size != 2) {
             sender.sendMessage("${ChatColor.RED}${plugin.language["CommandWarpWarpUsage"]}")
             return true
         }
