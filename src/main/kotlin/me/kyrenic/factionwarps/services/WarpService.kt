@@ -1,6 +1,5 @@
 package me.kyrenic.factionwarps.services
 
-import com.dansplugins.factionsystem.faction.MfFactionId
 import me.kyrenic.factionwarps.jooq.JooqWarpService
 import me.kyrenic.factionwarps.warp.Warp
 import org.bukkit.Location
@@ -8,7 +7,6 @@ import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
 import java.util.UUID
-import java.util.logging.Level
 
 class WarpService(private val plugin: Plugin, private val jooq: JooqWarpService) {
     fun getWarp(warpId: UUID): Warp? = jooq.getWarp(warpId)

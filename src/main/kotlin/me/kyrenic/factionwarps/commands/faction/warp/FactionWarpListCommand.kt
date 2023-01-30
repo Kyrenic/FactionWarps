@@ -96,7 +96,7 @@ class FactionWarpListCommand(private val plugin: FactionWarps) : CommandExecutor
             if (warp.tax > 0) {
                 infoList.add(TextComponent(plugin.language["WarpListEntryInfoTax", warp.tax.toString()]))
             }
-            when (warp.open) {
+            when (warp.accessible) {
                 true -> infoList.add(TextComponent(plugin.language["WarpListEntryInfoOpenClosed", plugin.language["WarpListEntryInfoOpen"]]))
                 false -> infoList.add(TextComponent(plugin.language["WarpListEntryInfoOpenClosed", plugin.language["WarpListEntryInfoClosed"]]))
             }

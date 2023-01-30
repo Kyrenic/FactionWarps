@@ -1,5 +1,6 @@
 package me.kyrenic.factionwarps.commands.faction.warp
 
+import com.dansplugins.factionsystem.faction.MfFactionId
 import com.dansplugins.factionsystem.player.MfPlayer
 import dev.forkhandles.result4k.onFailure
 import me.kyrenic.factionwarps.FactionWarps
@@ -27,7 +28,7 @@ class FactionWarpWarpCommand(private val plugin: FactionWarps) : CommandExecutor
             return true
         }
         // Command needs no argument.
-        if (args.size in 2..2) {
+        if (args.size != 2) {
             sender.sendMessage("${ChatColor.RED}${plugin.language["CommandWarpWarpUsage"]}")
             return true
         }
@@ -61,28 +62,28 @@ class FactionWarpWarpCommand(private val plugin: FactionWarps) : CommandExecutor
         }
         // Sender needs to have the correct faction permission to warp to their own factions warps.
         val role = senderFaction?.getRole(senderMfPlayer.id)
-        if (role != null && senderFaction.id == warp.factionId && !role.hasPermission(senderFaction, factionPermissions.warp)) {
+        if (role != null && UUID.fromString(senderFaction.id.value) == warp.factionId && !role.hasPermission(senderFaction, factionPermissions.warp)) {
             sender.sendMessage("${ChatColor.RED}${plugin.language["NoFactionPermission"]}")
             return true
         }
         // Sender needs to have the correct faction permission to warp to other factions warps.
-        if (role != null && senderFaction.id != warp.factionId && !role.hasPermission(senderFaction, factionPermissions.warpOthers)) {
+        if (role != null && UUID.fromString(senderFaction.id.value) != warp.factionId && !role.hasPermission(senderFaction, factionPermissions.warpOthers)) {
             sender.sendMessage("${ChatColor.RED}${plugin.language["NoFactionPermission"]}")
             return true
         }
         // Warp needs to be open.
-        if (senderFaction?.id != warp.factionId && !warp.open) {
+        if (UUID.fromString(senderFaction?.id?.value) != warp.factionId && !warp.accessible) {
             sender.sendMessage("${ChatColor.RED}${plugin.language["WarpNotOpen"]}")
             return true
         }
         // You cannot be banned.
         if (warpService.isPlayerBanned(warp, sender.uniqueId)) {
-            sender.sendMessage("${ChatColor.RED}${plugin.language["WarpBannedPlayer", factionService.getFaction(warp.factionId).toString()]}")
+            sender.sendMessage("${ChatColor.RED}${plugin.language["WarpBannedPlayer", factionService.getFaction(MfFactionId(warp.factionId.toString())).toString()]}")
             return true
         }
         // Your faction cannot be banned.
         if (senderFaction != null && warpService.isFactionBanned(warp, UUID.fromString(senderFaction.id.value))) {
-            sender.sendMessage("${ChatColor.RED}${plugin.language["WarpBannedFaction", factionService.getFaction(warp.factionId).toString()]}")
+            sender.sendMessage("${ChatColor.RED}${plugin.language["WarpBannedFaction", factionService.getFaction(MfFactionId(warp.factionId.toString())).toString()]}")
             return true
         }
 

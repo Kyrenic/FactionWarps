@@ -78,7 +78,7 @@ class FactionWarpCreateCommand(private val plugin: FactionWarps) : CommandExecut
         }
 
         // Actual command logic.
-        warpService.saveWarp(Warp(UUID.randomUUID(), senderFaction.id, warpName, sender.location))
+        warpService.saveWarp(Warp(UUID.randomUUID(), UUID.fromString(senderFaction.id.value), warpName, sender.location))
         sender.sendMessage("${ChatColor.GREEN}${plugin.language["WarpCreated", warpName]}")
         return true
     }
