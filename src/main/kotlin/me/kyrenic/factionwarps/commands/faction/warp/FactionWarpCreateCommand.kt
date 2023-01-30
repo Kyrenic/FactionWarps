@@ -59,7 +59,7 @@ class FactionWarpCreateCommand(private val plugin: FactionWarps) : CommandExecut
         }
         // Suggested warp must not go over the maximum warps.
         val maxWarpLimit = plugin.config.getInt("factionWarps.maxWarps")
-        if (warpService.getWarps(UUID.fromString(senderFaction.id.value)).size > maxWarpLimit) {
+        if (warpService.getWarps(UUID.fromString(senderFaction.id.value)).size >= maxWarpLimit) {
             sender.sendMessage("${ChatColor.RED}${plugin.language["MaxWarpLimitReached", maxWarpLimit.toString()]}")
             return true
         }

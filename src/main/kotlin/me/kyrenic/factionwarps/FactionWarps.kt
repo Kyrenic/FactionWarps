@@ -7,6 +7,9 @@ import com.zaxxer.hikari.HikariDataSource
 import me.kyrenic.factionwarps.commands.faction.warp.FactionWarpCommands
 import me.kyrenic.factionwarps.jooq.JooqWarpService
 import me.kyrenic.factionwarps.language.Language
+import me.kyrenic.factionwarps.listeners.FactionCreateListener
+import me.kyrenic.factionwarps.listeners.FactionDisbandListener
+import me.kyrenic.factionwarps.listeners.FactionUnclaimListener
 import me.kyrenic.factionwarps.permission.FactionWarpsFactionPermissions
 import me.kyrenic.factionwarps.services.ConfigService
 import me.kyrenic.factionwarps.services.Services
@@ -20,6 +23,7 @@ import org.flywaydb.core.Flyway
 import org.jooq.SQLDialect
 import org.jooq.conf.Settings
 import org.jooq.impl.DSL
+import preponderous.ponder.minecraft.bukkit.plugin.registerListeners
 import java.lang.reflect.Constructor
 import javax.sql.DataSource
 
@@ -137,6 +141,11 @@ class FactionWarps : JavaPlugin() {
 
         // Register listeners.
         // To add: unclaim, overclaim, faction disband
+        registerListeners(
+            FactionUnclaimListener(this),
+            FactionDisbandListener(this),
+            FactionCreateListener(this)
+        )
 
         // Set command executors.
         getDynamicCommand(language["CommandWarp"])?.setExecutor(FactionWarpCommands(this))

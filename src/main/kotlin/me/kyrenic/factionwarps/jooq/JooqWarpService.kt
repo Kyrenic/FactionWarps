@@ -5,9 +5,11 @@ import me.kyrenic.factionwarps.jooq.tables.references.WARPS
 import me.kyrenic.factionwarps.jooq.tables.references.WARP_BANNED_FACTIONS
 import me.kyrenic.factionwarps.jooq.tables.references.WARP_BANNED_PLAYERS
 import me.kyrenic.factionwarps.warp.Warp
+import org.bukkit.Chunk
 import org.bukkit.Location
 import org.bukkit.plugin.Plugin
 import org.jooq.DSLContext
+import org.jooq.impl.DSL.floor
 import java.util.UUID
 
 
@@ -52,6 +54,19 @@ class JooqWarpService(private val dsl: DSLContext, private val plugin: Plugin) {
         return buildWarp(warpResult)
     }
 
+    fun getWarpsAtChunk(factionId: UUID, chunk: Chunk): List<Warp> {
+        val warpResults = dsl.selectFrom(WARPS)
+            .where(WARPS.FACTION_ID.eq(factionId.toString()))
+            .and(floor(WARPS.X.div(16)).eq(chunk.x.toDouble()))
+            .and(floor(WARPS.Z.div(16)).eq(chunk.z.toDouble()))
+            .fetch()
+        val warpList: MutableList<Warp> = mutableListOf()
+        warpResults.forEach {
+            warpList.add(buildWarp(it))
+        }
+        return warpList.toList()
+    }
+
     fun getWarps(factionId: UUID): List<Warp> {
         val warpResults = dsl.selectFrom(WARPS)
             .where(WARPS.FACTION_ID.eq(factionId.toString()))
@@ -92,6 +107,10 @@ class JooqWarpService(private val dsl: DSLContext, private val plugin: Plugin) {
 
     fun deleteWarp(warpId: UUID) = dsl.deleteFrom(WARPS)
         .where(WARPS.ID.eq(warpId.toString()))
+        .execute()
+
+    fun deleteWarps(factionId: UUID) = dsl.deleteFrom(WARPS)
+        .where(WARPS.FACTION_ID.eq(factionId.toString()))
         .execute()
 
     fun isFactionBanned(warp: Warp, factionId: UUID): Boolean {

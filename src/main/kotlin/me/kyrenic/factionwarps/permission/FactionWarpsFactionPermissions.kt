@@ -8,11 +8,11 @@ class FactionWarpsFactionPermissions(private val plugin: FactionWarps) {
 
     init {
         permissions.addPermissionType(permissions.wrapSimplePermission("WARP", plugin.language["FactionPermissionWarp"], true))
-        permissions.addPermissionType(permissions.wrapSimplePermission("WARP_OTHERS", plugin.language["FactionPermissionWarp"], true))
+        permissions.addPermissionType(permissions.wrapSimplePermission("WARP_OTHERS", plugin.language["FactionPermissionWarpOthers"], true))
         permissions.addPermissionType(permissions.wrapSimplePermission("WARP_LIST", plugin.language["FactionPermissionWarpList"], true))
         permissions.addPermissionType(permissions.wrapSimplePermission("WARP_CREATE", plugin.language["FactionPermissionWarpCreate"], false))
         permissions.addPermissionType(permissions.wrapSimplePermission("WARP_DELETE", plugin.language["FactionPermissionWarpDelete"], false))
-        permissions.addPermissionType(permissions.wrapSimplePermission("WARP_EDIT", plugin.language["FactionPermissionWarpDelete"], false))
+        permissions.addPermissionType(permissions.wrapSimplePermission("WARP_EDIT", plugin.language["FactionPermissionWarpEdit"], false))
     }
 
     val warp = permissions.parse("WARP")!!
