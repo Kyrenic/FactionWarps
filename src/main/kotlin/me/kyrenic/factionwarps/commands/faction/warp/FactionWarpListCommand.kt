@@ -84,21 +84,21 @@ class FactionWarpListCommand(private val plugin: FactionWarps) : CommandExecutor
                     HoverEvent(SHOW_TEXT, Text(plugin.language["WarpListEntryDeleteButtonHover"]))
                 buttonList.add(deleteButton)
             }
-            if (sender.hasPermission("fw.warp.edit") && role.hasPermission(faction, factionPermissions.warpEdit)) {
+            /*if (sender.hasPermission("fw.warp.edit") && role.hasPermission(faction, factionPermissions.warpEdit)) {
                 val editButton = TextComponent("✎ ")
                 editButton.color = SpigotChatColor.YELLOW
                 editButton.clickEvent = ClickEvent(RUN_COMMAND, "/fwarp edit ${warp.name}")
                 editButton.hoverEvent =
                     HoverEvent(SHOW_TEXT, Text(plugin.language["WarpListEntryEditButtonHover"]))
                 buttonList.add(editButton)
-            }
+            }*/
             val infoList: MutableList<TextComponent> = mutableListOf()
-            if (warp.tax > 0) {
-                infoList.add(TextComponent(plugin.language["WarpListEntryInfoTax", warp.tax.toString()]))
+            when (warp.accessible) {
+                true -> infoList.add(TextComponent(" " + plugin.language["WarpListEntryInfoAccessibility", plugin.language["WarpListEntryInfoOpen"]]))
+                false -> infoList.add(TextComponent(" " + plugin.language["WarpListEntryInfoAccessibility", plugin.language["WarpListEntryInfoClosed"]]))
             }
-            when (warp.open) {
-                true -> infoList.add(TextComponent(plugin.language["WarpListEntryInfoOpenClosed", plugin.language["WarpListEntryInfoOpen"]]))
-                false -> infoList.add(TextComponent(plugin.language["WarpListEntryInfoOpenClosed", plugin.language["WarpListEntryInfoClosed"]]))
+            if (warp.tax > 0) {
+                infoList.add(TextComponent(" " + plugin.language["WarpListEntryInfoTax", warp.tax.toString()]))
             }
             val text = TextComponent(plugin.language["WarpListEntry", warp.name])
             sender.spigot().sendMessage(

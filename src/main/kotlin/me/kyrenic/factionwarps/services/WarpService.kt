@@ -1,19 +1,20 @@
 package me.kyrenic.factionwarps.services
 
-import com.dansplugins.factionsystem.faction.MfFactionId
 import me.kyrenic.factionwarps.jooq.JooqWarpService
 import me.kyrenic.factionwarps.warp.Warp
+import org.bukkit.Chunk
 import org.bukkit.Location
 import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
 import java.util.UUID
-import java.util.logging.Level
 
 class WarpService(private val plugin: Plugin, private val jooq: JooqWarpService) {
     fun getWarp(warpId: UUID): Warp? = jooq.getWarp(warpId)
 
     fun getWarp(factionId: UUID, name: String): Warp? = jooq.getWarp(factionId, name)
+
+    fun getWarpsAtChunk(factionId: UUID, chunk: Chunk) = jooq.getWarpsAtChunk(factionId, chunk)
 
     fun getWarps(factionId: UUID): List<Warp> = jooq.getWarps(factionId)
 
@@ -22,6 +23,8 @@ class WarpService(private val plugin: Plugin, private val jooq: JooqWarpService)
     fun deleteWarp(warpId: UUID) = jooq.deleteWarp(warpId)
 
     fun deleteWarp(warp: Warp) = deleteWarp(warp.id)
+
+    fun deleteWarps(factionId: UUID) = jooq.deleteWarps(factionId)
 
     fun deleteWarp(factionId: UUID, name: String) {
         val warp = getWarp(factionId, name) ?: return

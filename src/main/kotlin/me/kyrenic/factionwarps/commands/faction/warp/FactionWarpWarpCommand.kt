@@ -1,5 +1,7 @@
 package me.kyrenic.factionwarps.commands.faction.warp
 
+import com.dansplugins.factionsystem.faction.MfFaction
+import com.dansplugins.factionsystem.faction.MfFactionId
 import com.dansplugins.factionsystem.player.MfPlayer
 import dev.forkhandles.result4k.onFailure
 import me.kyrenic.factionwarps.FactionWarps
@@ -27,7 +29,7 @@ class FactionWarpWarpCommand(private val plugin: FactionWarps) : CommandExecutor
             return true
         }
         // Command needs no argument.
-        if (args.size in 2..2) {
+        if (args.size !in 1..2) {
             sender.sendMessage("${ChatColor.RED}${plugin.language["CommandWarpWarpUsage"]}")
             return true
         }
@@ -44,7 +46,7 @@ class FactionWarpWarpCommand(private val plugin: FactionWarps) : CommandExecutor
             return true
         }
         val senderFaction = factionService.getFaction(senderMfPlayer.id)
-        val argumentFaction = factionService.getFaction(args[0])
+        val argumentFaction = if (args.size == 1) { senderFaction } else { factionService.getFaction(args[0]) }
 
         // Secondary checks:
         // Faction needs to exist.
@@ -53,7 +55,7 @@ class FactionWarpWarpCommand(private val plugin: FactionWarps) : CommandExecutor
             return true
         }
         // Warp needs to exist.
-        val warpName = args[1]
+        val warpName = if (args.size == 1) { args[0] } else { args[1] }
         val warp = warpService.getWarp(UUID.fromString(argumentFaction.id.value), warpName)
         if (warp == null) {
             sender.sendMessage("${ChatColor.RED}${plugin.language["WarpDoesNotExist", warpName]}")
@@ -61,28 +63,28 @@ class FactionWarpWarpCommand(private val plugin: FactionWarps) : CommandExecutor
         }
         // Sender needs to have the correct faction permission to warp to their own factions warps.
         val role = senderFaction?.getRole(senderMfPlayer.id)
-        if (role != null && senderFaction.id == warp.factionId && !role.hasPermission(senderFaction, factionPermissions.warp)) {
+        if (role != null && UUID.fromString(senderFaction.id.value) == warp.factionId && !role.hasPermission(senderFaction, factionPermissions.warp)) {
             sender.sendMessage("${ChatColor.RED}${plugin.language["NoFactionPermission"]}")
             return true
         }
         // Sender needs to have the correct faction permission to warp to other factions warps.
-        if (role != null && senderFaction.id != warp.factionId && !role.hasPermission(senderFaction, factionPermissions.warpOthers)) {
+        if (role != null && UUID.fromString(senderFaction.id.value) != warp.factionId && !role.hasPermission(senderFaction, factionPermissions.warpOthers)) {
             sender.sendMessage("${ChatColor.RED}${plugin.language["NoFactionPermission"]}")
             return true
         }
         // Warp needs to be open.
-        if (senderFaction?.id != warp.factionId && !warp.open) {
+        if (UUID.fromString(senderFaction?.id?.value) != warp.factionId && !warp.accessible) {
             sender.sendMessage("${ChatColor.RED}${plugin.language["WarpNotOpen"]}")
             return true
         }
         // You cannot be banned.
         if (warpService.isPlayerBanned(warp, sender.uniqueId)) {
-            sender.sendMessage("${ChatColor.RED}${plugin.language["WarpBannedPlayer", factionService.getFaction(warp.factionId).toString()]}")
+            sender.sendMessage("${ChatColor.RED}${plugin.language["WarpBannedPlayer", factionService.getFaction(MfFactionId(warp.factionId.toString())).toString()]}")
             return true
         }
         // Your faction cannot be banned.
         if (senderFaction != null && warpService.isFactionBanned(warp, UUID.fromString(senderFaction.id.value))) {
-            sender.sendMessage("${ChatColor.RED}${plugin.language["WarpBannedFaction", factionService.getFaction(warp.factionId).toString()]}")
+            sender.sendMessage("${ChatColor.RED}${plugin.language["WarpBannedFaction", factionService.getFaction(MfFactionId(warp.factionId.toString())).toString()]}")
             return true
         }
 
@@ -97,13 +99,21 @@ class FactionWarpWarpCommand(private val plugin: FactionWarps) : CommandExecutor
         label: String,
         args: Array<out String>
     ): List<String> {
-        if (args.size == 1) {
-            val playerId = plugin.medievalFactions.services.playerService.getPlayer(sender as Player)?.id ?: return emptyList()
-            val factionId = plugin.medievalFactions.services.factionService.getFaction(playerId)?.id ?: return emptyList()
-            val warpList = plugin.services.warpService.getWarps(UUID.fromString(factionId.value))
-            return warpList.filter { it.name.startsWith(args[0].lowercase()) }.map(Warp::name)
-        } else {
-            return emptyList()
+        val factionService = plugin.medievalFactions.services.factionService
+        val warpService = plugin.services.warpService
+        val playerId = plugin.medievalFactions.services.playerService.getPlayer(sender as Player)?.id ?: return emptyList()
+        val factionId = factionService.getFaction(playerId)?.id ?: return emptyList()
+        var warpList = warpService.getWarps(UUID.fromString(factionId.value)).map(Warp::name)
+        val factionList = factionService.factions.map(MfFaction::name)
+        return when (args.size) {
+            1 -> {
+                (warpList + factionList).filter { it.startsWith(args[0].lowercase()) }
+            }
+            2 -> {
+                warpList = warpService.getWarps(UUID.fromString(factionService.getFaction(args[0])!!.id.value)).map(Warp::name)
+                warpList.filter { it.startsWith(args[1].lowercase()) }
+            }
+            else -> emptyList()
         }
     }
 }

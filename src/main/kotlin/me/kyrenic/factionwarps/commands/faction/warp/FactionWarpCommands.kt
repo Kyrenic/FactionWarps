@@ -41,7 +41,15 @@ class FactionWarpCommands(private val plugin: FactionWarps) : CommandExecutor, T
         command: Command,
         label: String,
         args: Array<out String>
-    ): List<String> {
-        return subcommands.filter { it.startsWith(args[0].lowercase()) }
+    ) = when  {
+        args.isEmpty() -> subcommands
+        args.size == 1 -> subcommands.filter { it.startsWith(args[0].lowercase()) }
+        else -> when (args.first().lowercase()) {
+            in listAliases -> factionWarpListCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
+            in createAliases -> factionWarpCreateCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
+            in deleteAliases -> factionWarpDeleteCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
+            in warpAliases -> factionWarpWarpCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
+            else -> emptyList()
+        }
     }
 }
