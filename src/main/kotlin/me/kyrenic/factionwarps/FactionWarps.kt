@@ -102,15 +102,16 @@ class FactionWarps : JavaPlugin() {
         factionPermissions = FactionWarpsFactionPermissions(this)
         val factionService = medievalFactions.services.factionService
         var factionsChanged = 0
+        var factionChanged = false
         // Loop through all the factions.
         factionService.factions.forEach { faction ->
-            factionsChanged++
             val newDefaultPermissionsByName = faction.defaultPermissionsByName.toMutableMap()
             var newRoles: List<MfFactionRole> = faction.roles.copy()
             // Loop through all the permissions that this extension adds.
             factionPermissions.permissionList.forEach { permission ->
                 // Check if the permission is present in the list, if not add it.
                 if (!faction.defaultPermissions.containsKey(permission)) {
+                    factionChanged = true
                     // Add it to the default permission list:
                     newDefaultPermissionsByName[permission.name] = permission.default
                     // Add it to the high-ranking roles:
@@ -126,9 +127,13 @@ class FactionWarps : JavaPlugin() {
                     }
                 }
             }
+            if (factionChanged) {
+                factionsChanged++
+                factionChanged = false
+            }
             factionService.save(faction.copy(defaultPermissionsByName = newDefaultPermissionsByName, roles = faction.roles.copy(roles = newRoles)))
-            logger.info("Added Faction Warps faction permissions to $factionsChanged factions...")
         }
+        logger.info("Added Faction Warps faction permissions to $factionsChanged factions...")
 
         // Register listeners.
         // To add: unclaim, overclaim, faction disband
