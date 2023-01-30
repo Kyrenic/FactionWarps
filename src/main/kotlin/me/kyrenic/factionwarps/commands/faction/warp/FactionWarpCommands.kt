@@ -15,13 +15,17 @@ class FactionWarpCommands(private val plugin: FactionWarps) : CommandExecutor, T
     private val factionWarpListCommand = FactionWarpListCommand(plugin)
     private val factionWarpCreateCommand = FactionWarpCreateCommand(plugin)
     private val factionWarpDeleteCommand = FactionWarpDeleteCommand(plugin)
+    private val factionWarpOpenCommand = FactionWarpOpenCommand(plugin)
+    private val factionWarpCloseCommand = FactionWarpCloseCommand(plugin)
 
     private val warpAliases = listOf(plugin.language["CommandWarpWarp"])
     private val listAliases = listOf(plugin.language["CommandWarpList"])
     private val createAliases = listOf(plugin.language["CommandWarpCreate"])
     private val deleteAliases = listOf(plugin.language["CommandWarpDelete"])
+    private val openAliases = listOf(plugin.language["CommandWarpOpen"])
+    private val closeAliases = listOf(plugin.language["CommandWarpClose"])
 
-    private val subcommands = warpAliases + listAliases + createAliases + deleteAliases
+    private val subcommands = warpAliases + listAliases + createAliases + deleteAliases + openAliases + closeAliases
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         return when (args.firstOrNull()?.lowercase()) {
@@ -29,6 +33,8 @@ class FactionWarpCommands(private val plugin: FactionWarps) : CommandExecutor, T
             in createAliases -> factionWarpCreateCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             in deleteAliases -> factionWarpDeleteCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             in warpAliases -> factionWarpWarpCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
+            in openAliases -> factionWarpOpenCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
+            in closeAliases -> factionWarpCloseCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             else -> {
                 sender.sendMessage("$RED${plugin.language["CommandWarpUsage"]}")
                 return true
@@ -49,6 +55,8 @@ class FactionWarpCommands(private val plugin: FactionWarps) : CommandExecutor, T
             in createAliases -> factionWarpCreateCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
             in deleteAliases -> factionWarpDeleteCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
             in warpAliases -> factionWarpWarpCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
+            in openAliases -> factionWarpOpenCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
+            in closeAliases -> factionWarpCloseCommand.onTabComplete(sender, command, label, args.drop(1).toTypedArray())
             else -> emptyList()
         }
     }
