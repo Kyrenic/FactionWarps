@@ -23,6 +23,12 @@ permissions:
   fw.warp.delete.others:
     description: Allows deleting warps of other factions.
     default: op
+  fw.warp.open:
+    description: Allows opening warps to the public.
+    default: true
+  fw.warp.close:
+    description: Allows closing warps from the public.
+    default: true
   fw.config.set:
     description: Set a config option to a desired value on next restart.
     default: op
