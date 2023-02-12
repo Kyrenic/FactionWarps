@@ -3,9 +3,9 @@ package me.kyrenic.factionwarps.jooq
 import me.kyrenic.factionwarps.jooq.tables.records.WarpBannedFactionsRecord
 import me.kyrenic.factionwarps.jooq.tables.records.WarpBannedPlayersRecord
 import me.kyrenic.factionwarps.jooq.tables.records.WarpsRecord
-import me.kyrenic.factionwarps.jooq.tables.references.WARPS
-import me.kyrenic.factionwarps.jooq.tables.references.WARP_BANNED_FACTIONS
-import me.kyrenic.factionwarps.jooq.tables.references.WARP_BANNED_PLAYERS
+import me.kyrenic.factionwarps.jooq.Tables.WARPS
+import me.kyrenic.factionwarps.jooq.Tables.WARP_BANNED_FACTIONS
+import me.kyrenic.factionwarps.jooq.Tables.WARP_BANNED_PLAYERS
 import me.kyrenic.factionwarps.warp.Warp
 import org.bukkit.Chunk
 import org.bukkit.Location
@@ -125,7 +125,9 @@ class JooqWarpService(private val plugin: Plugin, private val dsl: DSLContext) {
         )
     }
 
+    @JvmName("bannedPlayersRecordToDomain")
     private fun List<WarpBannedPlayersRecord>.toDomain(): List<UUID> = map { UUID.fromString(it.bannedPlayerId) }
 
+    @JvmName("bannedFactionsRecordToDomain")
     private fun List<WarpBannedFactionsRecord>.toDomain(): List<UUID> = map { UUID.fromString(it.bannedFactionId) }
 }

@@ -1,14 +1,11 @@
 package me.kyrenic.factionwarps.commands.faction.warp
 
 import me.kyrenic.factionwarps.FactionWarps
-import me.kyrenic.factionwarps.warp.Warp
-import org.bukkit.ChatColor
 import org.bukkit.ChatColor.RED
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.command.TabCompleter
-import org.bukkit.entity.Player
 
 class FactionWarpCommands(private val plugin: FactionWarps) : CommandExecutor, TabCompleter {
     private val factionWarpWarpCommand = FactionWarpWarpCommand(plugin)
@@ -28,6 +25,11 @@ class FactionWarpCommands(private val plugin: FactionWarps) : CommandExecutor, T
     private val subcommands = warpAliases + listAliases + createAliases + deleteAliases + openAliases + closeAliases
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
+        val cooldown = plugin.services.cooldownService.cooldown(sender, command, args)
+        if (cooldown?.onCooldown() == true) {
+            sender.sendMessage("${RED}${plugin.language["Cooldown", (cooldown.duration - cooldown.timePassed()).toString(), cooldown.chronoUnit.toString().lowercase()]}")
+            return true
+        }
         return when (args.firstOrNull()?.lowercase()) {
             in listAliases -> factionWarpListCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())
             in createAliases -> factionWarpCreateCommand.onCommand(sender, command, label, args.drop(1).toTypedArray())

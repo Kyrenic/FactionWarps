@@ -39,6 +39,7 @@ class FactionWarpWarpCommand(private val plugin: FactionWarps) : CommandExecutor
         val factionPermissions = plugin.factionPermissions
         val playerService = plugin.medievalFactions.services.playerService
         val warpService = plugin.services.warpService
+        val cooldownService = plugin.services.cooldownService
 
         val senderMfPlayer = playerService.getPlayer(sender) ?: playerService.save(MfPlayer(plugin.medievalFactions, sender)).onFailure {
             sender.sendMessage("${ChatColor.RED}${plugin.language["FailedToSavePlayer"]}")
@@ -89,7 +90,7 @@ class FactionWarpWarpCommand(private val plugin: FactionWarps) : CommandExecutor
         }
 
         // Actual command logic.
-        warpService.warp(sender, warp.location)
+        plugin.services.teleportService.warpTeleport(sender, warp.location)
         return true
     }
 

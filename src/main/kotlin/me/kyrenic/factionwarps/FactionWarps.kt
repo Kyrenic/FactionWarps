@@ -5,15 +5,14 @@ import com.dansplugins.factionsystem.faction.role.MfFactionRole
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import me.kyrenic.factionwarps.commands.faction.warp.FactionWarpCommands
+import me.kyrenic.factionwarps.jooq.JooqLogService
 import me.kyrenic.factionwarps.jooq.JooqWarpService
 import me.kyrenic.factionwarps.language.Language
 import me.kyrenic.factionwarps.listeners.FactionCreateListener
 import me.kyrenic.factionwarps.listeners.FactionDisbandListener
 import me.kyrenic.factionwarps.listeners.FactionUnclaimListener
 import me.kyrenic.factionwarps.permission.FactionWarpsFactionPermissions
-import me.kyrenic.factionwarps.services.ConfigService
-import me.kyrenic.factionwarps.services.Services
-import me.kyrenic.factionwarps.services.WarpService
+import me.kyrenic.factionwarps.services.*
 import org.bukkit.command.CommandMap
 import org.bukkit.command.PluginCommand
 import org.bukkit.plugin.Plugin
@@ -39,8 +38,6 @@ class FactionWarps : JavaPlugin() {
     lateinit var language: Language
 
     override fun onEnable() {
-        saveDefaultConfig()
-
         // Get Medieval Factions, disable if not found.
         val medievalFactions = server.pluginManager.getPlugin("MedievalFactions") as? MedievalFactions
         if (medievalFactions == null) {
@@ -53,6 +50,9 @@ class FactionWarps : JavaPlugin() {
 
         // Load the language file.
         language = Language(this, config.getString("language") ?: "en-US")
+
+        // Save the default config, fails silently if not present.
+        saveDefaultConfig()
 
         // Database thingamabobs.
         Class.forName("org.h2.Driver")
@@ -92,14 +92,21 @@ class FactionWarps : JavaPlugin() {
         )
 
         // Create services.
-        val jooqWarpService = JooqWarpService(dsl, this)
+        val jooqWarpService = JooqWarpService(this, dsl)
+        val jooqLogService = JooqLogService(this, dsl)
 
         val warpService = WarpService(this, jooqWarpService)
         val configService = ConfigService(this)
+        val teleportService = TeleportService(this)
+        val logService = LogService(this, jooqLogService)
+        val cooldownService = CooldownService(this)
 
         services = Services(
             warpService,
-            configService
+            configService,
+            teleportService,
+            logService,
+            cooldownService
         )
 
         // Add permissions.

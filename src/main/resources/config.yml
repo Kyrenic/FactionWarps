@@ -6,8 +6,19 @@ database:
   password: ''
 factionWarps:
   maxWarps: 3
-  delay: 3
-  cooldown: 3
   # List at https://jd.papermc.io/paper/1.19/org/bukkit/Sound.html under Enum Constants, case sensitive.
   teleportSound: 'ENTITY_ENDERMAN_TELEPORT'
   countdownSound: 'ENTITY_EXPERIENCE_ORB_PICKUP'
+  # List of units at https://docs.oracle.com/javase/8/docs/api/java/time/temporal/ChronoUnit.html
+  # Default is SECONDS if not specified.
+  cooldown:
+    fwarp warp:
+      unit: 'SECONDS'
+      duration: 5
+    fwarp create:
+      unit: 'MINUTES'
+      duration: 1
+  delay:
+    command:
+      unit: 'SECONDS'
+      duration: 3
